@@ -5,11 +5,13 @@ import bcrypt from "bcrypt"
 import { userModel } from "../mongoModel/mongoSchema";
 import { loginUser } from "../jwt/loginAuthentication";
 import jwt from "jsonwebtoken"
+import { validateUserRegistration } from "../validations/apivalidations";
+import { validationResult } from "express-validator";
 const jwtSecret = 'your_jwt_secret'
 
 const router = express.Router()
 
-router.post("/add", async function (req:Request,res:Response) {
+router.post("/add", validateUserRegistration,async function (req:Request,res:Response) {
     const { userName, email, contactNo, password, confirmPassword } = req.body;
     const salt = await bcrypt.genSalt(10);
     
@@ -23,6 +25,15 @@ router.post("/add", async function (req:Request,res:Response) {
       });
     const requestsBody = newUser
     console.log(requestsBody)
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+       res.status(400).json({
+        errors: errors.array()
+      });
+      
+      
+    }
     const data = await addUsers(requestsBody) 
     res.send(data)
 })

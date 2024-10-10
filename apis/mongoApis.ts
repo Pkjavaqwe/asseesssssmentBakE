@@ -1,4 +1,4 @@
-import { subjectModel, userModel,questionModel, User, Subject } from "../mongoModel/mongoSchema";
+import { subjectModel, userModel,questionModel, User, Subject, quepapersModel, Question, QuestionPaper } from "../mongoModel/mongoSchema";
 import { Request, Response} from "express";
 import bcrypt from "bcrypt"
 import { log } from "console";
@@ -56,7 +56,7 @@ export async function addSubject(subject:Subject) {
 }
 
 
-export async function addQuestion(question:Subject) {
+export async function addQuestion(question:Question) {
     console.log("in addSubject api in apis");
     console.log("question--",question);
     
@@ -68,6 +68,19 @@ export async function addQuestion(question:Subject) {
         console.log(error);
     }
 }
+export async function addQuestionpapers(questionPaper:QuestionPaper) {
+    console.log("in addSubject api in apis");
+    console.log("question--",questionPaper);
+    
+    try {
+        const questionBody = new quepapersModel(questionPaper)    
+        
+    return await questionBody.save();
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 export async function getSubjectsByUserId(user_Id:string) {
     console.log("in getSubjectsByUserId");
@@ -86,12 +99,24 @@ export async function getQuestionPaperBySubjectId(subject_id:string) {
     try {
         // return await subjectModel.findOne({userId:"66fe5d7c39ac437e368b54b5"}).populate('questionPaper').populate('userId')
        
-        return await questionModel.find({subjectId:subject_id}).populate('subjectId')
+        return await quepapersModel.find({subjectId:subject_id}).populate('subjectId')
         // return await userModel.findOne({_id:"66fe5d7c39ac437e368b54b5"}).populate('subjects').populate('quepapers')
     } catch (error) {
         console.log(error);
     }
    
+}
+
+export async function getQuestionByPaperId(question_Id:string) {
+    console.log("in getQuestionByPaperId");
+    try {
+        // return await subjectModel.findOne({userId:"66fe5d7c39ac437e368b54b5"}).populate('questionPaper').populate('userId')
+       
+        return await questionModel.find({questionId:question_Id}).populate('questionId')
+        // return await userModel.findOne({_id:"66fe5d7c39ac437e368b54b5"}).populate('subjects').populate('quepapers')
+    } catch (error) {
+        console.log(error);
+    }
 }
 export async function getUserDataByName(username:string){
     try {

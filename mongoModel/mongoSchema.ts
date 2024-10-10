@@ -115,23 +115,38 @@ const subjectSchema = new Schema<Subject>({
 
 export interface Question{
   questionBody: String;
-  type: ["mcq", "descriptive"];
-  choices: String[];
+  type?:"mcq" | "descriptive";
+  choices?: String[];
   marksAlloted: Number;
-  subjectId:String, 
+  qustionPaper:String[];
+  questionId:String, 
 }
 
 
 const questionSchema = new Schema<Question>({
   questionBody:{type: String, required:true},
-    type:["mcq","descriptive"],
-    choices:[{type:String,  required:true}],
+    type:{ type: String, enum: ["mcq", "descriptive"], required: false },
+    choices:[{type:String,  required:false}],
     marksAlloted:{type: Number, required:true},
-     subjectId:{
+    questionId:{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Subjects'
-     }, 
+      ref: 'QuestionPaper'
+     }
   })
+
+export interface QuestionPaper{
+  paperName:String;
+  paper:Question[]
+  subjectId:String
+}
+const questionPaperSchema = new Schema<QuestionPaper>({
+  paperName:{type: String, required:true},
+  paper:[questionSchema],
+  subjectId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Subjects'
+   }
+})
 
 
   
@@ -262,3 +277,4 @@ const subjectSchema = new Schema<Subject>({
 export const subjectModel = mongoose.model('Subjects',subjectSchema)
 export const userModel = mongoose.model('Users',userSchema)
 export const questionModel =  mongoose.model('Questions',questionSchema)
+export const quepapersModel = mongoose.model('QuestionPaper',questionPaperSchema)
