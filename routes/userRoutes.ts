@@ -31,11 +31,9 @@ router.post("/add", validateUserRegistration,async function (req:Request,res:Res
        res.status(400).json({
         errors: errors.array()
       });
-      
-      
     }
     const data = await addUsers(requestsBody) 
-    res.send(data)
+    res.status(200).json(data)
 })
 router.post('/auth',(req:Request,res:Response)=>{loginUser(req,res)})
 export default router

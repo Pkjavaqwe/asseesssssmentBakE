@@ -130,6 +130,21 @@ export async function getUserDataByName(username:string){
     }
 }
 
+
+export async function getUserById(userId:string){
+    try {
+        console.log("in getUserDataByName");
+        
+        const result = await userModel.findOne({_id:userId}).exec()
+        console.log(result)
+        return result
+    } catch (error) {
+        console.log(error);  
+    }
+}
+
+
+
 // subId-"66fe6ddf81df16e51db8ea82"
 
 

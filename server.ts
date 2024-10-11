@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import { addQuestion, addQuestionpapers, addSubject, addUsers, getQuestionByPaperId, getQuestionPaperBySubjectId, getSubjectsByUserId, getUserDataByName } from "./apis/mongoApis";
+import { addQuestion, addQuestionpapers, addSubject, addUsers, getQuestionByPaperId, getQuestionPaperBySubjectId, getSubjectsByUserId, getUserById, getUserDataByName } from "./apis/mongoApis";
 import { dbConnect } from "./dbConfig/config";
 import cors from "cors"
 import router from "./routes/userRoutes"
@@ -79,7 +79,7 @@ app.post("/users/subjects/questionpaper/question/add",validateAddQuestion, async
     const requestsBody = req.body
     console.log(requestsBody)
     const data = await addQuestion(requestsBody)
-    res.send(data)
+    res.status(200).json(data)
 })
 
 app.post("/users/subjects/questionpaper/add",async function (req:Request,res:Response) {
@@ -88,24 +88,24 @@ app.post("/users/subjects/questionpaper/add",async function (req:Request,res:Res
 
     console.log(requestsBody)
     const data = await addQuestionpapers(requestsBody)
-    res.send(data)
+    res.status(200).json(data)
 })
 
 app.get("/users/sub/get/:_id",async function(req:Request,res:Response) {
    
 
     const data = await getSubjectsByUserId(req.params._id)
-    res.json(data)
+    res.status(200).json(data)
 })
 
 app.get("/users/que/get/:_id",async function(req:Request,res:Response) {
     const data = await getQuestionByPaperId(req.params._id)
-    res.json(data)
+    res.status(200).json(data)
 })
 
 app.get("/users/quepaper/get/:_id",async function(req:Request,res:Response) {
     const data = await getQuestionPaperBySubjectId(req.params._id)
-    res.json(data)
+    res.status(200).json(data)
 })
 
 
@@ -114,10 +114,14 @@ app.get("/users/quepaper/get/:_id",async function(req:Request,res:Response) {
 app.get("/users/getbyname/:userName",async function(req:Request,res:Response) {
     const data = await getUserDataByName(req.params.userName)
     console.log("getByName",data)
-    res.json(data)
+    res.status(200).json(data)
 })
 
-
+app.get("/users/byid/:_id",async function(req:Request,res:Response) {
+    const data = await getUserById(req.params._id)
+    console.log("getById",data)
+    res.status(200).json(data)
+}) 
 
 
 

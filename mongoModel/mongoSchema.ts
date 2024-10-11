@@ -141,7 +141,7 @@ export interface QuestionPaper{
 }
 const questionPaperSchema = new Schema<QuestionPaper>({
   paperName:{type: String, required:true},
-  paper:[questionSchema],
+  paper:[questionSchema], 
   subjectId:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Subjects'
