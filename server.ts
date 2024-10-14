@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import { addQuestion, addQuestionpapers, addSubject, addUsers, getQuestionByPaperId, getQuestionPaperBySubjectId, getSubjectsByUserId, getUserById, getUserDataByName } from "./apis/mongoApis";
+import { addQuestion, addQuestionpapers, addSubject, addUsers,deleteQuestionById,deleteSubjectById, getQuestionById, getQuestionByPaperId, getQuestionPaperBySubjectId, getSubjectsByUserId, getUserById, getUserDataByName, updateQuestion } from "./apis/mongoApis";
 import { dbConnect } from "./dbConfig/config";
 import cors from "cors"
 import router from "./routes/userRoutes"
@@ -123,7 +123,55 @@ app.get("/users/byid/:_id",async function(req:Request,res:Response) {
     res.status(200).json(data)
 }) 
 
+app.delete("/users/delete/:_id", async function (req,res) {
+   console.log("inside delete at backend");
+   
+    try {
+        const data = await deleteSubjectById(req.params._id) 
+        console.log(data);
+        
+        res.status(200).json(data);    
+    } catch (error) {
+        console.log(error);
+    }
+       
+})
 
+app.delete("/users/deleteque/:_id", async function (req,res) {
+    console.log("inside delete Question at backend");
+    
+     try {
+         const data = await deleteQuestionById(req.params._id) 
+         console.log(data);
+         
+         res.status(200).json(data);    
+     } catch (error) {
+         console.log(error);
+     }
+        
+ })
+
+ app.get("/users/getque/:_id",async function(req:Request,res:Response) {
+    const data = await getQuestionById(req.params._id)
+    console.log("getquestionById",data)
+    res.status(200).json(data) 
+})
+
+app.put("/users/updateque/:queId", async function (req,res) {
+    const requestBody = req.body
+    console.log("from Client",requestBody)
+    const {_id, ...question}=requestBody
+    console.log("_id",_id)
+    console.log(question);
+    try {
+       const  data = await updateQuestion(_id,question)
+    res.send(data)            
+    } catch (error) {
+       res.send(error);            
+    }
+    
+})
+ 
 
 
 

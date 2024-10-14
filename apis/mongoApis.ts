@@ -2,6 +2,7 @@ import { subjectModel, userModel,questionModel, User, Subject, quepapersModel, Q
 import { Request, Response} from "express";
 import bcrypt from "bcrypt"
 import { log } from "console";
+import questonModel from "../mongoModel/questonModel";
 export async function addUsers(user:User) {
     // console.log("in addUser api in apis");
     // console.log("users----",user);
@@ -143,7 +144,37 @@ export async function getUserById(userId:string){
     }
 }
 
+export async function deleteSubjectById(subId:string) {
+    console.log("in deleteSubjectById");
+    
+    const deletedData= await subjectModel.deleteOne({_id:subId})
+    return deletedData
+}
 
+export async function deleteQuestionById(queId:string) {
+    console.log("in deleteQuestionById");
+    
+    const deletedData= await questionModel.deleteOne({_id:queId})
+    return deletedData
+}
+
+export async function getQuestionById(questId:string){
+    try {
+        console.log("in getUserDataByName");
+        
+        const result = await questionModel.findOne({_id:questId}).exec()
+        console.log(result)
+        return result
+    } catch (error) {
+        console.log(error);  
+    }
+}
+
+export async function updateQuestion(questionId:string, question:Question){
+    const filter = {_id:questionId};
+    const updates = question
+    return await questionModel.updateOne(filter, question) 
+}
 
 // subId-"66fe6ddf81df16e51db8ea82"
 
