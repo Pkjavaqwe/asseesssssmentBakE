@@ -55,8 +55,6 @@ app.post("/users/subjects/add",validateAddSubject, async function (req:Request,r
        res.status(400).json({
         errors: errors.array()
       });
-      
-      
     }
 
 
