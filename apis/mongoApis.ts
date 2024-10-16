@@ -63,8 +63,8 @@ export async function addQuestion(question:Question) {
     
     try {
         const questionBody = new questionModel(question)    
-        
-    return await questionBody.save();
+        const result =await questionBody.save();
+        return result
     } catch (error) {
         console.log(error);
     }

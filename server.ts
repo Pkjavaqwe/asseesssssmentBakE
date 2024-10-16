@@ -3,11 +3,11 @@ import dotenv from "dotenv";
 import { addQuestion, addQuestionpapers, addSubject, addUsers,deleteQuestionById,deleteSubjectById, getQuestionById, getQuestionByPaperId, getQuestionPaperBySubjectId, getSubjectsByUserId, getUserById, getUserDataByName, updateQuestion } from "./apis/mongoApis";
 import { dbConnect } from "./dbConfig/config";
 import cors from "cors"
-import router from "./routes/userRoutes"
+import router, { validJWTNeeded } from "./routes/userRoutes"
 import { loginUser } from "./jwt/loginAuthentication";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { User, userModel } from "./mongoModel/mongoSchema";
+import { questionModel, User, userModel } from "./mongoModel/mongoSchema";
 import { validationResult } from "express-validator";
 import { validateAddQuestion, validateAddSubject } from "./validations/apivalidations";
 import { param } from "express-validator";
@@ -46,9 +46,9 @@ const jwtSecret="secrete"
 // })
 app.use("/users", router)
 app.use("/login",router)
-
+ 
 app.post("/users/subjects/add",validateAddSubject, async function (req:Request,res:Response) {
-
+   
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -66,15 +66,14 @@ app.post("/users/subjects/add",validateAddSubject, async function (req:Request,r
     res.send(data)
 })
 
-app.post("/users/subjects/questionpaper/question/add",validateAddQuestion, async function (req:Request,res:Response) {
-     
-    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-       res.status(400).json({
-        errors: errors.array()
-      });      
-    }
+app.post("/users/subjects/questionpaper/question/add",validJWTNeeded,validateAddQuestion, async function (req:Request,res:Response) {
+
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //    res.status(400).json({
+    //     errors: errors.array()
+    //   });      
+    // }
 
     const requestsBody = req.body
     console.log(requestsBody)
@@ -83,7 +82,7 @@ app.post("/users/subjects/questionpaper/question/add",validateAddQuestion, async
 })
 
 app.post("/users/subjects/questionpaper/add",async function (req:Request,res:Response) {
-     
+    // validJWTNeeded(req,res)
     const requestsBody = req.body
 
     console.log(requestsBody)
@@ -92,7 +91,7 @@ app.post("/users/subjects/questionpaper/add",async function (req:Request,res:Res
 })
 
 app.get("/users/sub/get/:_id",async function(req:Request,res:Response) {
-   
+    // validJWTNeeded(req,res)
 
     const data = await getSubjectsByUserId(req.params._id)
     res.status(200).json(data)
@@ -112,12 +111,14 @@ app.get("/users/quepaper/get/:_id",async function(req:Request,res:Response) {
 // app.get("/users/que/get/:_id)
 
 app.get("/users/getbyname/:userName",async function(req:Request,res:Response) {
+    
     const data = await getUserDataByName(req.params.userName)
     console.log("getByName",data)
     res.status(200).json(data)
 })
 
 app.get("/users/byid/:_id",async function(req:Request,res:Response) {
+   
     const data = await getUserById(req.params._id)
     console.log("getById",data)
     res.status(200).json(data)
@@ -125,6 +126,7 @@ app.get("/users/byid/:_id",async function(req:Request,res:Response) {
 
 app.delete("/users/delete/:_id", async function (req,res) {
    console.log("inside delete at backend");
+  
    
     try {
         const data = await deleteSubjectById(req.params._id) 
@@ -172,6 +174,67 @@ app.put("/users/updateque/:queId", async function (req,res) {
     
 })
  
+app.get('/users/weekly/:year', async (req, res) => {
+    const year = parseInt(req.params.year);
+    try {
+      const weeklyStats = await questionModel.aggregate([
+        {
+          $match: {
+            $expr: {
+              $eq: [{ $year: "$timestamp" }, year] 
+            }
+          }
+        },
+        {
+          $group: {
+            _id: { $week: "$timestamp" }, 
+            count: { $sum: 1 },
+            questions: { $push: "$$ROOT" }
+          }
+        },
+        {
+          $sort: { _id: 1 }
+        }
+      ]);
+  
+      res.json(weeklyStats);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error fetching weekly statistics' });
+    }
+  });
+  
+
+  app.get('/users/monthly/:year', async (req, res) => {
+    const year = parseInt(req.params.year);
+    try {
+      const monthlyStats = await questionModel.aggregate([
+        {
+          $match: {
+            $expr: {
+              $eq: [{ $year: "$timestamp" }, year] 
+            }
+          }
+        },
+        {
+          $group: {
+            _id: { $month: "$timestamp" }, 
+            count: { $sum: 1 },
+            questions: { $push: "$$ROOT" }
+          }
+        },
+        {
+          $sort: { _id: 1 } // Sort by month number
+        }
+      ]);
+  
+      res.json(monthlyStats);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error fetching monthly statistics' });
+    }
+  });
+  
 
 
 

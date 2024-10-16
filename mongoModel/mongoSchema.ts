@@ -28,7 +28,7 @@ const schema = new Schema({
   // export default model<User>('User',schema)
  
 
-  import mongoose, { model, Schema } from "mongoose";
+  import mongoose, { Date, model, Schema } from "mongoose";
 /*
 export interface Question{
     questionBody: String;
@@ -120,6 +120,7 @@ export interface Question{
   marksAlloted: Number;
   qustionPaper:String[];
   questionId:String, 
+  timestamp?: Date
 }
 
 
@@ -131,7 +132,8 @@ const questionSchema = new Schema<Question>({
     questionId:{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'QuestionPaper'
-     }
+     },
+     timestamp: { type: Date, default: Date.now }
   })
 
 export interface QuestionPaper{
